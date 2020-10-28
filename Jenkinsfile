@@ -1,10 +1,26 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'gradle:jdk11'
+    }
+
+  }
   stages {
-    stage('Say Hello') {
-      steps {
-        sh 'echo "pul 같� <(((-<"'
-        sh 'echo "<((-<"'
+    stage('Parallel execution') {
+      parallel {
+        stage('Say Hello') {
+          steps {
+            sh 'echo "pul 째째째 <(((-<"'
+            sh 'echo "<((-<"'
+          }
+        }
+
+        stage('Build App') {
+          steps {
+            sh 'ci/build-app.sh'
+          }
+        }
+
       }
     }
 

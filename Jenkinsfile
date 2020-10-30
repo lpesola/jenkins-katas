@@ -3,8 +3,11 @@ pipeline {
     docker {
       image 'gradle:jdk11'
     }
-
   }
+  environment {
+    HUB_USR = 'lpesola'
+  }
+
   stages {
       
     stage('clone') {
@@ -43,6 +46,17 @@ pipeline {
 
         }
 
+      }
+    }
+
+    stage('docker push') {
+      environment {
+        DOCKERCREDS = credentials('docker_hub_login')
+      }
+      steps {
+        unstash 'katacode'
+        sh 'echo "$DOCKERCREDS_PSW" | docker login -u "$DOCKERCREDS_USR" --password-stdin && echo "Logged in to hub for $HUB_USR"'
+        sh 'ci/push-docker.sh'
       }
     }
 

@@ -6,6 +6,14 @@ pipeline {
 
   }
   stages {
+      
+    stage('clone') {
+      steps {
+          checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: false, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/lpesola/jenkins-katas/']]]
+          stash excludes: '.git', name: 'katacode'
+      }
+    }
+      
     stage('Parallel execution') {
       parallel {
         stage('Say Hello') {
@@ -17,8 +25,13 @@ pipeline {
 
         stage('Build App') {
           steps {
-            sh 'ci/build-app.sh'
+              unstash 'katacode'
+              sh 'ci/build-app.sh'
           }
+         options {
+              skipDefaultCheckout()
+          }
+
         }
 
       }

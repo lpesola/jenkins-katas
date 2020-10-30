@@ -16,10 +16,19 @@ pipeline {
       
     stage('Parallel execution') {
       parallel {
+
         stage('Say Hello') {
           steps {
             sh 'echo "pul °°° <(((-<"'
             sh 'echo "<((-<"'
+          }
+        }
+
+        stage('test app') {
+          steps {
+              unstash 'katacode'
+              sh 'ci/unit-test-app.sh'
+              junit 'app/build/test-results/test/TEST-*.xml'
           }
         }
 
@@ -43,5 +52,10 @@ pipeline {
       }
     }
 
+  }
+  post {
+    always {
+      deleteDir() 
+    }
   }
 }
